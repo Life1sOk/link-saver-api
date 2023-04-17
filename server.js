@@ -13,10 +13,10 @@ const links = require("./controllers/links");
 const db = knex({
   client: "pg",
   connection: {
-    host: "127.0.0.1",
-    user: "lifeisok",
-    password: "",
-    database: "linkesaverdb",
+    host: "dpg-cguhu0o2qv2fdedjhang-a",
+    user: "link_saver_db_user",
+    password: process.env.PASSWORD,
+    database: "link_saver_db",
   },
 });
 
@@ -50,7 +50,7 @@ app.put("/links/change/group", links.handleChangeLinksGroup(db));
 app.put("/links/change/status", links.handleChangeStatus(db));
 app.delete("/links/delete", links.handleDeleteLinks(db));
 
-const PORT = process.env.PORT | 3000;
+const PORT = process.env.PORT | 5432;
 
 app.listen(PORT, () => {
   console.log(`App is runnig on port ${PORT}`);
