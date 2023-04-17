@@ -50,7 +50,7 @@ app.put("/links/change/group", links.handleChangeLinksGroup(db));
 app.put("/links/change/status", links.handleChangeStatus(db));
 app.delete("/links/delete", links.handleDeleteLinks(db));
 
-const PORT = process.env.PORT | 5432;
+const PORT = process.env.PORT || 5432;
 
 app.listen(PORT, () => {
   console.log(`App is runnig on port ${PORT}`);
