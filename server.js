@@ -13,10 +13,10 @@ const links = require("./controllers/links");
 const db = knex({
   client: "pg",
   connection: {
-    host: "dpg-cguhu0o2qv2fdedjhang-a",
-    user: "link_saver_db_user",
-    password: process.env.PASSWORD,
-    database: "link_saver_db",
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   },
 });
 
