@@ -34,7 +34,7 @@ const signinAuthentication = (db, bcrypt) => (req, res) => {
     ? session
         .getUserIdByToken(token)
         .then((session) => res.status(200).json(session))
-        .catch(() => res.status(400).json("some fail with user"))
+        .catch(() => res.status(400).json("some fail with user 2"))
     : handleSignin(db, bcrypt, req, res)
         .then((user) => {
           return user.id && user.email
