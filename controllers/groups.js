@@ -1,24 +1,28 @@
 // Get groups with links
 const handleGetGroupsWithLinks = (db) => (req, res) => {
-  const { topic_id } = req.params;
+  const { params } = req.params;
+  let splited = params.split("&");
+  let user_id = splited[0];
+  let topic_id = splited[1];
 
-  if (!topic_id) return res.status(400).json("have no access to this data");
-  /* Запрос к дб - забрать группы и линки в куче */
+  if (!topic_id || !user_id)
+    return res.status(400).json("have no access to this data");
+
   db.select("id", "group_title")
     .from("groups")
-    .where({ topic_id })
+    .where({ topic_id, user_id })
     .then((groups) => res.status(200).json(groups))
     .catch(() => res.status(400).json("something is going wrong"));
 };
 
 // Add new group
 const handleAddGroup = (db) => (req, res) => {
-  const { topic_id, group_title } = req.body;
+  const { topic_id, group_title, user_id } = req.body;
 
-  if (topic_id == null || !group_title)
+  if (topic_id == null || !group_title || !user_id)
     return res.status(400).json("have no access to this data");
   // Need check if group already exist
-  db.insert({ topic_id, group_title, created_at: new Date() })
+  db.insert({ topic_id, group_title, user_id, created_at: new Date() })
     .into("groups")
     .then(() => res.status(200).json("group succesfully added"))
     .catch(() => res.status(400).json("something is going wrong"));

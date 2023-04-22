@@ -12,12 +12,11 @@ const links = require("./controllers/links");
 
 const db = knex({
   client: "pg",
-  connection: {
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false,
-    },
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
   },
+  // connection: process.env.POSTGRES_URI,
 });
 
 const app = express();
@@ -28,15 +27,15 @@ app.get("/", (request, response) => {
   response.send("It is working right now");
 });
 
-app.post("/signin", signin.handleSignin(db, bcrypt));
-app.post("/register", register.handleRegister(db, bcrypt));
+app.post("/signin", signin.signinAuthentication(db, bcrypt));
+app.post("/register", register.registerAuthentication(db, bcrypt));
 
 app.get("/topics/:user_id", topics.handleGetTopics(db));
 app.post("/topics/add", topics.handleAddTopic(db));
 app.put("/topics/change", topics.handlerChangeTopic(db));
 app.delete("/topics/delete", topics.handleDeleteTopic(db));
 
-app.get("/groups/:topic_id", groups.handleGetGroupsWithLinks(db));
+app.get("/groups/:params", groups.handleGetGroupsWithLinks(db));
 app.post("/groups/add", groups.handleAddGroup(db));
 app.put("/groups/change", groups.handleChangeGroup(db));
 app.delete("/groups/delete", groups.handleDeleteGroup(db));
@@ -50,7 +49,7 @@ app.put("/links/change/group", links.handleChangeLinksGroup(db));
 app.put("/links/change/status", links.handleChangeStatus(db));
 app.delete("/links/delete", links.handleDeleteLinks(db));
 
-const PORT = process.env.PORT || 5432;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`App is runnig on port ${PORT}`);
