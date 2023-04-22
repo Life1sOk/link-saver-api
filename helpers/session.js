@@ -2,12 +2,7 @@ const jwt = require("jsonwebtoken");
 const redis = require("redis");
 
 // const clientRedis = redis.createClient({ url: process.env.REDIS_URI });
-const clientRedis = redis.createClient({
-  socket: {
-    tls: true,
-    rejectUnauthorized: false,
-  },
-});
+const clientRedis = redis.createClient({ url: process.env.REDIS_URL });
 
 clientRedis.on("error", (err) => console.log("Redis Client Error", err));
 
