@@ -10,13 +10,15 @@ const topics = require("./controllers/topics");
 const groups = require("./controllers/groups");
 const links = require("./controllers/links");
 
+// connection: process.env.POSTGRES_URI,
 const db = knex({
   client: "pg",
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
+  connection: {
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   },
-  // connection: process.env.POSTGRES_URI,
 });
 
 const app = express();
