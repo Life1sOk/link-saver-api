@@ -42,7 +42,7 @@ const signinAuthentication = (db, bcrypt) => (req, res) => {
             : Promise.reject("rejcted");
         })
         .then((session) => res.status(200).json(session))
-        .catch((err) => res.status(400).json("some fail with user"));
+        .catch((err) => res.status(400).json(err, "some fail with user"));
 };
 
 module.exports = {
