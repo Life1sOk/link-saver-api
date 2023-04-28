@@ -8,11 +8,28 @@ const handleGetGroupsWithLinks = (db) => (req, res) => {
   if (!topic_id || !user_id)
     return res.status(400).json("have no access to this data");
 
-  db.select("id", "group_title")
-    .from("groups")
-    .where({ topic_id, user_id })
-    .then((groups) => res.status(200).json(groups))
-    .catch(() => res.status(400).json("something is going wrong"));
+  db.transaction((trx) => {
+    trx
+      .select("id", "group_title")
+      .from("groups")
+      .where({ topic_id, user_id })
+      .then(async (groups) => {
+        return Promise.all(
+          groups.map((group) => {
+            return trx
+              .select("id", "link_title", "link_url", "status")
+              .from("links")
+              .where({ user_id, group_id: group.id })
+              .then((links) => {
+                return { ...group, links };
+              });
+          })
+        );
+      })
+      .then((upGroups) => res.status(200).json(upGroups))
+      .then(trx.commit)
+      .catch(trx.rollback);
+  }).catch(() => res.status(400).json("something is going wrong"));
 };
 
 // Add new group
