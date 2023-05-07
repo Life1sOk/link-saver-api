@@ -5,8 +5,7 @@ const handleGetGroupsWithLinks = (db) => (req, res) => {
   let user_id = splited[0];
   let topic_id = splited[1];
 
-  if (!topic_id || !user_id)
-    return res.status(400).json("have no access to this data");
+  if (!topic_id || !user_id) return res.status(400).json("have no access to this data");
 
   db.transaction((trx) => {
     trx
@@ -41,7 +40,8 @@ const handleAddGroup = (db) => (req, res) => {
   // Need check if group already exist
   db.insert({ topic_id, group_title, user_id, created_at: new Date() })
     .into("groups")
-    .then(() => res.status(200).json("group succesfully added"))
+    .returning("id")
+    .then((group_id) => res.status(200).json(group_id[0]))
     .catch(() => res.status(400).json("something is going wrong"));
 };
 

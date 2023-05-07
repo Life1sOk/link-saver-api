@@ -20,7 +20,8 @@ const handleAddTopic = (db) => (req, res) => {
 
   db.insert({ user_id, topic_title, created_at: new Date() })
     .into("topics")
-    .then(() => res.status(200).json("topic succesfully created"))
+    .returning("id")
+    .then((topic_id) => res.status(200).json(topic_id[0]))
     .catch(() => res.status(400).json("something is going wrong"));
 };
 
