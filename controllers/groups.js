@@ -58,6 +58,18 @@ const handleChangeGroup = (db) => (req, res) => {
     .catch(() => res.status(400).json("something is going wrong"));
 };
 
+const handleChangeGroupTopicId = (db) => (req, res) => {
+  const { group_id, new_topic_id } = req.body;
+
+  if (!group_id) return res.status(400).json("have no access to this data");
+
+  db.update({ topic_id: new_topic_id })
+    .into("groups")
+    .where({ id: group_id })
+    .then(() => res.status(200).json("group transction succesfully done"))
+    .catch(() => res.status(400).json("something is going wrong"));
+};
+
 // Delete group
 const handleDeleteGroup = (db) => (req, res) => {
   const { id, user_id } = req.body;
@@ -86,4 +98,5 @@ module.exports = {
   handleAddGroup,
   handleChangeGroup,
   handleDeleteGroup,
+  handleChangeGroupTopicId,
 };

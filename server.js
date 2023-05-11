@@ -33,6 +33,7 @@ app.post("/signin", signin.signinAuthentication(db, bcrypt));
 app.post("/register", register.registerAuthentication(db, bcrypt));
 
 app.get("/topics/:user_id", topics.handleGetTopics(db));
+app.get("/topics/group_count/:topic_id", topics.handleGetTopicCount(db));
 app.post("/topics/add", topics.handleAddTopic(db));
 app.put("/topics/change", topics.handlerChangeTopic(db));
 app.delete("/topics/delete", topics.handleDeleteTopic(db));
@@ -40,6 +41,7 @@ app.delete("/topics/delete", topics.handleDeleteTopic(db));
 app.get("/groups/:params", groups.handleGetGroupsWithLinks(db));
 app.post("/groups/add", groups.handleAddGroup(db));
 app.put("/groups/change", groups.handleChangeGroup(db));
+app.put("/groups/transaction", groups.handleChangeGroupTopicId(db));
 app.delete("/groups/delete", groups.handleDeleteGroup(db));
 
 app.get("/links/generic/:user_id", links.handleGetGenericLinks(db));
