@@ -13,6 +13,7 @@ const handleGetGroupsWithLinks = (db) => (req, res) => {
       .from("groups")
       .where({ topic_id, user_id })
       .then(async (groups) => {
+        // Make faster and better
         return Promise.all(
           groups.map((group) => {
             return trx

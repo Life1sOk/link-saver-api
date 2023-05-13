@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const cors = require("cors");
 const knex = require("knex");
 
+const user = require("./controllers/user");
 const register = require("./controllers/register");
 const signin = require("./controllers/signin");
 const topics = require("./controllers/topics");
@@ -31,6 +32,8 @@ app.get("/", (request, response) => {
 
 app.post("/signin", signin.signinAuthentication(db, bcrypt));
 app.post("/register", register.registerAuthentication(db, bcrypt));
+
+app.get("/profile/:user_id", user.handlerGetUser(db));
 
 app.get("/topics/:user_id", topics.handleGetTopics(db));
 app.get("/topics/group_count/:topic_id", topics.handleGetTopicCount(db));
