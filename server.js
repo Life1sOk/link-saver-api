@@ -10,6 +10,8 @@ const signin = require("./controllers/signin");
 const topics = require("./controllers/topics");
 const groups = require("./controllers/groups");
 const links = require("./controllers/links");
+const friends = require("./controllers/friend");
+const connect = require("./helpers/connect");
 
 const db = knex({
   client: "pg",
@@ -30,10 +32,16 @@ app.get("/", (request, response) => {
   response.send("It is working right now");
 });
 
+app.get("/connect/:user_id", connect.handlerGetConnection(db));
+
 app.post("/signin", signin.signinAuthentication(db, bcrypt));
 app.post("/register", register.registerAuthentication(db, bcrypt));
 
 app.get("/profile/:user_id", user.handlerGetUser(db));
+app.get("/search/:uservalue", user.handlerGetUserSearch(db));
+
+app.get("/friends/:user_id", friends.handlerGetFriends(db));
+app.post("/friends/invite", friends.handleInviteFriend(db));
 
 app.get("/topics/:user_id", topics.handleGetTopics(db));
 app.get("/topics/group_count/:topic_id", topics.handleGetTopicCount(db));

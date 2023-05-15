@@ -4,5 +4,6 @@
 \i '/docker-entrypoint-initdb.d/table/topics.sql'
 \i '/docker-entrypoint-initdb.d/table/groups.sql'
 \i '/docker-entrypoint-initdb.d/table/links.sql'
+\i '/docker-entrypoint-initdb.d/table/friends.sql'
 
 \i '/docker-entrypoint-initdb.d/seed/seed.sql'
