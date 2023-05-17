@@ -12,18 +12,55 @@ const handlerGetUser = (db) => (req, res) => {
 };
 
 // Get users search data
+// const handlerGetUserSearch = (db) => (req, res) => {
+//   const { uservalue } = req.params;
+//   let splited = uservalue.split("&");
+//   let user_id = Number(splited[0]);
+//   let value = splited[1];
+
+//   db.select("id", "username", "email")
+//     .from("users")
+//     .whereNot("id", user_id)
+//     .whereLike("email", `${value}%`)
+//     .then((data) => res.status(200).json(data))
+//     .catch(() => res.status(400).json("something is going wrong with searching"));
+// };
+
 const handlerGetUserSearch = (db) => (req, res) => {
   const { uservalue } = req.params;
   let splited = uservalue.split("&");
   let user_id = Number(splited[0]);
   let value = splited[1];
 
-  db.select("id", "username", "email")
-    .from("users")
-    .whereNot("id", user_id)
-    .whereLike("email", `${value}%`)
-    .then((users) => res.status(200).json(users))
-    .catch(() => res.status(400).json("something is going wrong with searching"));
+  db.transaction((trx) => {
+    trx
+      .select("id", "username", "email")
+      .from("users")
+      .whereNot("id", user_id)
+      .whereLike("email", `${value}%`)
+      .then(async (users) => {
+        return Promise.all(
+          users.map((target) => {
+            return trx
+              .select("id")
+              .from("friends")
+              .where({ user_id_two: target.id, user_id_one: user_id })
+              .orWhere({ user_id_two: user_id, user_id_one: target.id })
+              .then((data) => {
+                if (!data[0]) {
+                  return target;
+                }
+              });
+          })
+        );
+      })
+      .then((users) => {
+        const filtered = users.filter((user) => user !== undefined);
+        res.status(200).json(filtered);
+      })
+      .then(trx.commit)
+      .catch(trx.rollback);
+  }).catch(() => res.status(400).json("something is going wrong with searching"));
 };
 
 module.exports = {

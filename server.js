@@ -42,6 +42,9 @@ app.get("/search/:uservalue", user.handlerGetUserSearch(db));
 
 app.get("/friends/:user_id", friends.handlerGetFriends(db));
 app.post("/friends/invite", friends.handleInviteFriend(db));
+app.post("/friends/accept", friends.handleAcceptFriend(db));
+app.delete("/friends/cancle", friends.handleCancleFriend(db));
+app.delete("/friends/delete", friends.handleDeleteFriend(db));
 
 app.get("/topics/:user_id", topics.handleGetTopics(db));
 app.get("/topics/group_count/:topic_id", topics.handleGetTopicCount(db));
