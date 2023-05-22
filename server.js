@@ -12,6 +12,7 @@ const groups = require("./controllers/groups");
 const links = require("./controllers/links");
 const friends = require("./controllers/friend");
 const connect = require("./helpers/connect");
+const transition = require("./controllers/transition");
 
 const db = knex({
   client: "pg",
@@ -45,6 +46,9 @@ app.post("/friends/invite", friends.handleInviteFriend(db));
 app.post("/friends/accept", friends.handleAcceptFriend(db));
 app.delete("/friends/cancle", friends.handleCancleFriend(db));
 app.delete("/friends/delete", friends.handleDeleteFriend(db));
+
+app.post("/transition/add", transition.handleTransitionAdd(db));
+app.post("/transition/accept", transition.handleTransitionAccept(db));
 
 app.get("/topics/:user_id", topics.handleGetTopics(db));
 app.get("/topics/group_count/:topic_id", topics.handleGetTopicCount(db));

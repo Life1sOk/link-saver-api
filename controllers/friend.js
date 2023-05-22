@@ -70,7 +70,7 @@ const handleInviteFriend = (db) => (req, res) => {
               data: { ...user[0], friend_id: friend_id[0].id },
             };
             // Emmit message
-            connect.handleInviteFriend(to, response);
+            connect.handleSendMessage(to, response);
             return res.status(200).json(friend_id[0].id);
           })
           .catch(() => res.status(400).json("something is going wrong with invite"));
@@ -102,7 +102,7 @@ const handleAcceptFriend = (db) => (req, res) => {
               data: { ...user[0], friend_id },
             };
             // Emmit message
-            connect.handleInviteFriend(data[0].user_id_one, response);
+            connect.handleSendMessage(data[0].user_id_one, response);
             return res.status(200).json("friendship succesfully accepted");
           });
       })
@@ -136,9 +136,8 @@ const handleDeleteFriend = (db) => (req, res) => {
         type: "delete friend",
         data: { from_id },
       };
-      console.log(to_id);
       // Emmit message
-      connect.handleInviteFriend(to_id, response);
+      connect.handleSendMessage(to_id, response);
       res.status(200).json("friendship succesfully deleted");
     })
     .catch(() => res.status(400).json("something is going wrong"));

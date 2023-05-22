@@ -16,11 +16,19 @@ const handlerGetConnection = (db) => (req, res) => {
   });
 };
 
-const handleInviteFriend = (toUser, message) => {
+const handleSendMessage = (toUser, message) => {
+  /* 
+    toUser: user_id 
+    message: {
+      type: string,
+      data: {} | any
+    }
+  */
+
   eventEmitter.emit(`${toUser}`, message);
 };
 
 module.exports = {
   handlerGetConnection,
-  handleInviteFriend,
+  handleSendMessage,
 };
