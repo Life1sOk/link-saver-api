@@ -47,6 +47,7 @@ app.post("/friends/accept", friends.handleAcceptFriend(db));
 app.delete("/friends/cancle", friends.handleCancleFriend(db));
 app.delete("/friends/delete", friends.handleDeleteFriend(db));
 
+app.get("/transition/:user_id", transition.handleTransitionGet(db));
 app.post("/transition/add", transition.handleTransitionAdd(db));
 app.post("/transition/accept", transition.handleTransitionAccept(db));
 

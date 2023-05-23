@@ -1,5 +1,53 @@
 const connect = require("../helpers/connect");
 
+const handleTransitionGet = (db) => (req, res) => {
+  const { user_id } = req.params;
+
+  if (!user_id) return res.status(400).json("have no access to this data");
+  // Voob6e di4 kakajato - doljen byt sposob polu46e....
+  db.transaction((trx) => {
+    trx
+      .select("id", "from_user_id", "group_id")
+      .into("transition")
+      .where({ to_user_id: user_id })
+      .then(async (transitions) => {
+        return Promise.all(
+          transitions.map((transition) => {
+            return trx
+              .select("username", "email")
+              .from("users")
+              .where({ id: transition.from_user_id })
+              .then((users) => {
+                return trx
+                  .select("id", "group_title")
+                  .into("groups")
+                  .where({ id: transition.group_id })
+                  .then((groups) => {
+                    return trx
+                      .select("id", "link_title", "link_url", "status")
+                      .into("links")
+                      .where({ group_id: groups[0].id })
+                      .then((links) => {
+                        return {
+                          transition_id: transition.id,
+                          from: users[0],
+                          group: {
+                            ...groups[0],
+                            links,
+                          },
+                        };
+                      });
+                  });
+              });
+          })
+        );
+      })
+      .then((upTrans) => res.status(200).json(upTrans))
+      .then(trx.commit)
+      .catch(trx.rollback);
+  }).catch(() => res.status(400).json("something is going wrong"));
+};
+
 const handleTransitionAdd = (db) => (req, res) => {
   const { from, to, data } = req.body;
 
@@ -84,6 +132,7 @@ const handleTransitionAccept = (db) => (req, res) => {
 };
 
 module.exports = {
+  handleTransitionGet,
   handleTransitionAdd,
   handleTransitionAccept,
 };
