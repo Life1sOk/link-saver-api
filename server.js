@@ -49,10 +49,11 @@ app.delete("/friends/delete", friends.handleDeleteFriend(db));
 
 app.get("/transition/:user_id", transition.handleTransitionGet(db));
 app.post("/transition/add", transition.handleTransitionAdd(db));
-app.post("/transition/accept", transition.handleTransitionAccept(db));
+app.put("/transition/accept", transition.handleTransitionAccept(db));
+app.delete("/transition/cancel", transition.handleTransitionCancel(db));
 
 app.get("/topics/:user_id", topics.handleGetTopics(db));
-app.get("/topics/group_count/:topic_id", topics.handleGetTopicCount(db));
+app.get("/topics/group_count/:params", topics.handleGetTopicCount(db));
 app.post("/topics/add", topics.handleAddTopic(db));
 app.put("/topics/change", topics.handlerChangeTopic(db));
 app.delete("/topics/delete", topics.handleDeleteTopic(db));

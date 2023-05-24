@@ -13,12 +13,15 @@ const handleGetTopics = (db) => (req, res) => {
 };
 
 const handleGetTopicCount = (db) => (req, res) => {
-  const { topic_id } = req.params;
+  const { params } = req.params;
+  let splited = params.split("&");
+  let user_id = splited[0];
+  let topic_id = splited[1];
 
-  if (!topic_id) return res.status(400).json("have no access to this data");
+  if (!topic_id && !user_id) return res.status(400).json("have no access to this data");
 
   db.count("id")
-    .where({ topic_id })
+    .where({ topic_id, user_id })
     .from("groups")
     .then((group_count) => res.json(group_count[0]))
     .catch(() => res.status(400).json("something is going wrong"));

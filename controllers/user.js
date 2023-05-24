@@ -11,21 +11,6 @@ const handlerGetUser = (db) => (req, res) => {
     .catch(() => res.status(400).json("something is going wrong with user"));
 };
 
-// Get users search data
-// const handlerGetUserSearch = (db) => (req, res) => {
-//   const { uservalue } = req.params;
-//   let splited = uservalue.split("&");
-//   let user_id = Number(splited[0]);
-//   let value = splited[1];
-
-//   db.select("id", "username", "email")
-//     .from("users")
-//     .whereNot("id", user_id)
-//     .whereLike("email", `${value}%`)
-//     .then((data) => res.status(200).json(data))
-//     .catch(() => res.status(400).json("something is going wrong with searching"));
-// };
-
 const handlerGetUserSearch = (db) => (req, res) => {
   const { uservalue } = req.params;
   let splited = uservalue.split("&");

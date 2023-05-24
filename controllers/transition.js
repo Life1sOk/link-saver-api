@@ -131,8 +131,21 @@ const handleTransitionAccept = (db) => (req, res) => {
   }).catch(() => res.status(400).json("something is going wrong"));
 };
 
+const handleTransitionCancel = (db) => (req, res) => {
+  const { transition_id } = req.body;
+
+  if (!transition_id) return res.status(400).json("no access to this");
+
+  db.del()
+    .into("transition")
+    .where({ id: transition_id })
+    .then(() => res.status(200).json("transition canceled"))
+    .catch(() => res.status(400).json("something is going wrong"));
+};
+
 module.exports = {
   handleTransitionGet,
   handleTransitionAdd,
   handleTransitionAccept,
+  handleTransitionCancel,
 };
