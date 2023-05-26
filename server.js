@@ -39,7 +39,10 @@ app.post("/signin", signin.signinAuthentication(db, bcrypt));
 app.post("/register", register.registerAuthentication(db, bcrypt));
 
 app.get("/profile/:user_id", user.handlerGetUser(db));
-app.get("/search/:uservalue", user.handlerGetUserSearch(db));
+app.put("/profile/update/username", user.handlerUpdateUsername(db));
+app.put("/profile/update/email", user.handlerUpdateUserEmail(db));
+app.put("/profile/update/password", user.handlerChangeUserPassword(db, bcrypt));
+app.get("/profile/search/:uservalue", user.handlerGetUserSearch(db));
 
 app.get("/friends/:user_id", friends.handlerGetFriends(db));
 app.post("/friends/invite", friends.handleInviteFriend(db));
