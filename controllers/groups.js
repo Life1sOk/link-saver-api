@@ -5,8 +5,7 @@ const handleGetGroupsWithLinks = (db) => (req, res) => {
   let user_id = splited[0];
   let topic_id = splited[1];
 
-  if (!topic_id || !user_id)
-    return res.status(400).json("have no access to this data");
+  if (!topic_id || !user_id) return res.status(400).json("have no access to this data");
 
   db.transaction((trx) => {
     trx
@@ -14,6 +13,7 @@ const handleGetGroupsWithLinks = (db) => (req, res) => {
       .from("groups")
       .where({ topic_id, user_id })
       .then(async (groups) => {
+        // Make faster and better
         return Promise.all(
           groups.map((group) => {
             return trx
@@ -41,7 +41,8 @@ const handleAddGroup = (db) => (req, res) => {
   // Need check if group already exist
   db.insert({ topic_id, group_title, user_id, created_at: new Date() })
     .into("groups")
-    .then(() => res.status(200).json("group succesfully added"))
+    .returning("id")
+    .then((group_id) => res.status(200).json(group_id[0]))
     .catch(() => res.status(400).json("something is going wrong"));
 };
 
@@ -55,6 +56,18 @@ const handleChangeGroup = (db) => (req, res) => {
     .into("groups")
     .where({ id })
     .then(() => res.status(200).json("group succesfully updated"))
+    .catch(() => res.status(400).json("something is going wrong"));
+};
+
+const handleChangeGroupTopicId = (db) => (req, res) => {
+  const { group_id, new_topic_id } = req.body;
+
+  if (!group_id) return res.status(400).json("have no access to this data");
+
+  db.update({ topic_id: new_topic_id })
+    .into("groups")
+    .where({ id: group_id })
+    .then(() => res.status(200).json("group transction succesfully done"))
     .catch(() => res.status(400).json("something is going wrong"));
 };
 
@@ -86,4 +99,5 @@ module.exports = {
   handleAddGroup,
   handleChangeGroup,
   handleDeleteGroup,
+  handleChangeGroupTopicId,
 };

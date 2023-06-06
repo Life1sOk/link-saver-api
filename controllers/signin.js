@@ -2,8 +2,7 @@ const session = require("../helpers/session");
 
 const handleSignin = (db, bcrypt, req, res) => {
   const { email, password } = req.body;
-  if (!email || !password)
-    return res.status(400).json("not fill all properties");
+  if (!email || !password) return res.status(400).json("not fill all properties");
 
   return db
     .select("email", "hash")
@@ -19,12 +18,12 @@ const handleSignin = (db, bcrypt, req, res) => {
           .from("users")
           .where({ email })
           .then((user) => user[0])
-          .catch(() => Promise.reject("no such user"));
+          .catch(() => Promise.reject("no such a user"));
       } else {
         Promise.reject("wrong credentials");
       }
     })
-    .catch(() => Promise.reject("sign in fail"));
+    .catch(() => Promise.reject("Email does not exist."));
 };
 
 const signinAuthentication = (db, bcrypt) => (req, res) => {
@@ -42,7 +41,7 @@ const signinAuthentication = (db, bcrypt) => (req, res) => {
             : Promise.reject("rejcted");
         })
         .then((session) => res.status(200).json(session))
-        .catch((err) => res.status(400).json(err, "some fail with user"));
+        .catch((err) => res.status(400).json(err));
 };
 
 module.exports = {

@@ -19,8 +19,7 @@ const handleGetGroupsLinks = (db) => (req, res) => {
   let user_id = splited[0];
   let group_id = splited[1];
 
-  if (!user_id || !group_id)
-    return res.status(400).json("have no access to this data");
+  if (!user_id || !group_id) return res.status(400).json("have no access to this data");
 
   db.select("id", "link_title", "link_url")
     .from("links")
@@ -44,7 +43,8 @@ const handleAddLinks = (db) => (req, res) => {
     created_at: new Date(),
   })
     .into("links")
-    .then(() => res.status(200).json("link succesfully added"))
+    .returning("id")
+    .then((link_id) => res.status(200).json(link_id[0]))
     .catch(() => res.status(400).json("something is going wrong"));
 };
 

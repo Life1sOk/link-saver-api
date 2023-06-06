@@ -4,11 +4,26 @@ const handleGetTopics = (db) => (req, res) => {
 
   if (!user_id) return res.status(400).json("have no access to this data");
 
-  db.select("*")
+  db.select("id", "topic_title")
     .from("topics")
     .where({ user_id })
     .orderBy("id")
     .then((topics) => res.json(topics))
+    .catch(() => res.status(400).json("something is going wrong"));
+};
+
+const handleGetTopicCount = (db) => (req, res) => {
+  const { params } = req.params;
+  let splited = params.split("&");
+  let user_id = splited[0];
+  let topic_id = splited[1];
+
+  if (!topic_id && !user_id) return res.status(400).json("have no access to this data");
+
+  db.count("id")
+    .where({ topic_id, user_id })
+    .from("groups")
+    .then((group_count) => res.json(group_count[0]))
     .catch(() => res.status(400).json("something is going wrong"));
 };
 
@@ -20,7 +35,8 @@ const handleAddTopic = (db) => (req, res) => {
 
   db.insert({ user_id, topic_title, created_at: new Date() })
     .into("topics")
-    .then(() => res.status(200).json("topic succesfully created"))
+    .returning("id")
+    .then((topic_id) => res.status(200).json(topic_id[0]))
     .catch(() => res.status(400).json("something is going wrong"));
 };
 
@@ -76,4 +92,5 @@ module.exports = {
   handleAddTopic,
   handlerChangeTopic,
   handleDeleteTopic,
+  handleGetTopicCount,
 };
