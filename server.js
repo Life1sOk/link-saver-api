@@ -16,13 +16,13 @@ const transition = require("./controllers/transition");
 
 const db = knex({
   client: "pg",
-  // connection: process.env.POSTGRES_URI,
-  connection: {
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  },
+  connection: process.env.POSTGRES_URI,
+  // connection: {
+  //   connectionString: process.env.DATABASE_URL,
+  //   ssl: {
+  //     rejectUnauthorized: false,
+  //   },
+  // },
 });
 
 const app = express();
