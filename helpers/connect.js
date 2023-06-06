@@ -5,9 +5,6 @@ const eventEmitter = new EventEmitter();
 const handlerGetConnection = (db) => (req, res) => {
   const { user_id } = req.params;
 
-  res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-
   res.writeHead(200, {
     Connection: "keep-alive",
     "Content-type": "text/event-stream",
@@ -15,6 +12,9 @@ const handlerGetConnection = (db) => (req, res) => {
     // "Access-Control-Allow-Origin": "*",
     // 'Access-Control-Allow-Credentials': 'true'
   });
+
+  res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
+  res.setHeader("Access-Control-Allow-Credentials", "true");
 
   eventEmitter.on(`${user_id}`, (message) => {
     res.write(`data: ${JSON.stringify(message)} \n\n`);
