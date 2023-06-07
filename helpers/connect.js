@@ -9,8 +9,8 @@ const handlerGetConnection = (db) => (req, res) => {
     Connection: "keep-alive",
     "Content-type": "text/event-stream",
     "Cache-Control": "no-cache",
-    "Access-Control-Allow-Origin": "https://life1sok.github.io",
-    // "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Credentials": "true",
   });
 
   // res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
