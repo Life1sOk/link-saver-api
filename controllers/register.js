@@ -2,8 +2,7 @@ const session = require("../helpers/session");
 
 const handleRegister = (db, bcrypt, req, res) => {
   const { username, password, email } = req.body;
-  if (!username || !password || !email)
-    return Promise.reject("not fill all properties");
+  if (!username || !password || !email) return Promise.reject("not fill all properties");
 
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(password, salt);
@@ -34,7 +33,7 @@ const handleRegister = (db, bcrypt, req, res) => {
       })
       .catch(() => Promise.reject("registration fail"));
   } else {
-    Promise.reject("no able to register");
+    return Promise.reject("no able to register");
   }
 };
 
