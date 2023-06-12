@@ -9,12 +9,11 @@ const handlerGetConnection = (db) => (req, res) => {
     Connection: "keep-alive",
     "Content-type": "text/event-stream",
     "Cache-Control": "no-cache",
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": "http://localhost:3001",
     "Access-Control-Allow-Credentials": "true",
   });
 
   eventEmitter.on(`${user_id}`, (message) => {
-    console.log("header find", res);
     res.write(`data: ${JSON.stringify(message)} \n\n`);
   });
 };
