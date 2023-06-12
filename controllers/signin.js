@@ -20,10 +20,10 @@ const handleSignin = (db, bcrypt, req, res) => {
           .then((user) => user[0])
           .catch(() => Promise.reject("no such a user"));
       } else {
-        Promise.reject("wrong credentials");
+        return Promise.reject("Wrong credentials");
       }
-    })
-    .catch(() => Promise.reject("Email does not exist."));
+    });
+  // .catch(() => Promise.reject("Email does not exist."));
 };
 
 const signinAuthentication = (db, bcrypt) => (req, res) => {
