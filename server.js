@@ -28,7 +28,7 @@ const db = knex({
 const app = express();
 app.use(bodyParser.json());
 
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: "https://life1sok.github.io" }));
 
 app.get("/", (request, response) => {
   response.send("It is working right now");
