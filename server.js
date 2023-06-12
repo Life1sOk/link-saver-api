@@ -28,11 +28,7 @@ const db = knex({
 const app = express();
 app.use(bodyParser.json());
 
-var corsOptions = {
-  origin: "https://life1sok.github.io",
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-};
-app.use(cors({ origin: "https://life1sok.github.io" }));
+app.use(cors({ origin: "*" }));
 
 app.get("/", (request, response) => {
   response.send("It is working right now");
