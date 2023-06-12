@@ -22,8 +22,8 @@ const handleSignin = (db, bcrypt, req, res) => {
       } else {
         return Promise.reject("Wrong credentials");
       }
-    });
-  // .catch(() => Promise.reject("Email does not exist."));
+    })
+    .catch(() => Promise.reject("Email does not exist."));
 };
 
 const signinAuthentication = (db, bcrypt) => (req, res) => {
