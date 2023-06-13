@@ -1,4 +1,4 @@
-const connect = require("../helpers/connect");
+const websocket = require("../helpers/websocket");
 
 const handleTransitionGet = (db) => (req, res) => {
   const { user_id } = req.params;
@@ -48,7 +48,7 @@ const handleTransitionGet = (db) => (req, res) => {
   }).catch(() => res.status(400).json("something is going wrong"));
 };
 
-const handleTransitionAdd = (db) => (req, res) => {
+const handleTransitionAdd = (db, wss) => (req, res) => {
   const { from, to, data } = req.body;
 
   if (!from || !to || !data) return res.status(400).json("have no access to this data");
@@ -74,8 +74,9 @@ const handleTransitionAdd = (db) => (req, res) => {
               from: users[0],
             },
           };
-          // Send message
-          connect.handleSendMessage(to, message);
+          // Websocket message
+          websocket.handleSendMessage(wss, to, message);
+
           res.status(200).json("transition successfully added");
         });
     })

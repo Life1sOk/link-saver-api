@@ -1,4 +1,4 @@
-const connect = require("../helpers/connect");
+const websocket = require("../helpers/websocket");
 
 const handlerGetFriends = (db) => (req, res) => {
   const { user_id } = req.params;
@@ -50,7 +50,7 @@ const handlerGetFriends = (db) => (req, res) => {
   }).catch(() => res.status(400).json("something is going wrong with friends"));
 };
 
-const handleInviteFriend = (db) => (req, res) => {
+const handleInviteFriend = (db, wss) => (req, res) => {
   const { from, to } = req.body;
   if (!from || !to) return res.status(400).json("have no access to this data");
 
@@ -69,8 +69,8 @@ const handleInviteFriend = (db) => (req, res) => {
               type: "invite friend",
               data: { ...user[0], friend_id: friend_id[0].id },
             };
-            // Emmit message
-            connect.handleSendMessage(to, response);
+            // Websocket message
+            websocket.handleSendMessage(wss, to, response);
             return res.status(200).json(friend_id[0].id);
           })
           .catch(() => res.status(400).json("something is going wrong with invite"));
@@ -80,7 +80,7 @@ const handleInviteFriend = (db) => (req, res) => {
   }).catch(() => res.status(400).json("something is going wrong with invite"));
 };
 
-const handleAcceptFriend = (db) => (req, res) => {
+const handleAcceptFriend = (db, wss) => (req, res) => {
   const { friend_id } = req.body;
 
   if (!friend_id) return res.status(400).json("have no access to this data");
@@ -101,8 +101,8 @@ const handleAcceptFriend = (db) => (req, res) => {
               type: "confirmed friend",
               data: { ...user[0], friend_id },
             };
-            // Emmit message
-            connect.handleSendMessage(data[0].user_id_one, response);
+            // Websocket message
+            websocket.handleSendMessage(wss, data[0].user_id_one, response);
             return res.status(200).json("friendship succesfully accepted");
           });
       })
@@ -123,7 +123,7 @@ const handleCancleFriend = (db) => (req, res) => {
     .catch(() => res.status(400).json("something is going wrong"));
 };
 
-const handleDeleteFriend = (db) => (req, res) => {
+const handleDeleteFriend = (db, wss) => (req, res) => {
   const { friend_id, from_id, to_id } = req.body;
 
   if (!friend_id) return res.status(400).json("have no access to this data");
@@ -136,9 +136,9 @@ const handleDeleteFriend = (db) => (req, res) => {
         type: "delete friend",
         data: { from_id },
       };
-      // Emmit message
-      connect.handleSendMessage(to_id, response);
-      res.status(200).json("friendship succesfully deleted");
+      // Websocket message
+      websocket.handleSendMessage(wss, to_id, response);
+      return res.status(200).json("friendship succesfully deleted");
     })
     .catch(() => res.status(400).json("something is going wrong"));
 };

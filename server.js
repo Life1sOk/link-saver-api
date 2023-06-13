@@ -1,8 +1,11 @@
 const express = require("express");
+const app = express();
+
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 const knex = require("knex");
+const wss = require("express-ws")(app);
 
 const user = require("./controllers/user");
 const register = require("./controllers/register");
@@ -11,8 +14,9 @@ const topics = require("./controllers/topics");
 const groups = require("./controllers/groups");
 const links = require("./controllers/links");
 const friends = require("./controllers/friend");
-const connect = require("./helpers/connect");
 const transition = require("./controllers/transition");
+
+const websocket = require("./helpers/websocket");
 
 const db = knex({
   client: "pg",
@@ -25,16 +29,14 @@ const db = knex({
   },
 });
 
-const app = express();
 app.use(bodyParser.json());
-
 app.use(cors());
 
-app.get("/", (request, response) => {
-  response.send("It is working right now");
-});
+// WebSocker //
+app.ws("/connect", websocket.connectSocketHandler(wss));
+// ------------------ //
 
-app.get("/connect/:user_id", connect.handlerGetConnection(db));
+app.get("/", (request, response) => response.send("It is working right now"));
 
 app.post("/signin", signin.signinAuthentication(db, bcrypt));
 app.post("/register", register.registerAuthentication(db, bcrypt));
@@ -46,13 +48,13 @@ app.put("/profile/update/password", user.handlerChangeUserPassword(db, bcrypt));
 app.get("/profile/search/:uservalue", user.handlerGetUserSearch(db));
 
 app.get("/friends/:user_id", friends.handlerGetFriends(db));
-app.post("/friends/invite", friends.handleInviteFriend(db));
-app.post("/friends/accept", friends.handleAcceptFriend(db));
+app.post("/friends/invite", friends.handleInviteFriend(db, wss));
+app.post("/friends/accept", friends.handleAcceptFriend(db, wss));
 app.delete("/friends/cancle", friends.handleCancleFriend(db));
-app.delete("/friends/delete", friends.handleDeleteFriend(db));
+app.delete("/friends/delete", friends.handleDeleteFriend(db, wss));
 
 app.get("/transition/:user_id", transition.handleTransitionGet(db));
-app.post("/transition/add", transition.handleTransitionAdd(db));
+app.post("/transition/add", transition.handleTransitionAdd(db, wss));
 app.put("/transition/accept", transition.handleTransitionAccept(db));
 app.delete("/transition/cancel", transition.handleTransitionCancel(db));
 
