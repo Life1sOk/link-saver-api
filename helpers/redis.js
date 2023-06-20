@@ -38,7 +38,33 @@ const createSession = async (user) => {
     .catch(() => Promise.reject("fail set token"));
 };
 
+// Добавляем архив
+const addIntoArchive = async (user_id, type, data) => {
+  const key = `${user_id}:${data.id}:${type}`;
+
+  const prepData = { type, data };
+
+  return await clientRedis
+    .set(key, JSON.stringify(prepData), { EX: 604800 })
+    .catch(() => Promise.reject("fail set archive redis"));
+};
+
+const getFromArchive = async (user_id, data_id, type) => {
+  const key = `${user_id}:${data_id}:${type}`;
+
+  return await clientRedis.get(key);
+};
+
+const deleteFromArchive = async (user_id, data_id, type) => {
+  const key = `${user_id}:${data_id}:${type}`;
+
+  return await clientRedis.del(key);
+};
+
 module.exports = {
   createSession,
   getUserIdByToken,
+  addIntoArchive,
+  getFromArchive,
+  deleteFromArchive,
 };

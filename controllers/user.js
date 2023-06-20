@@ -26,7 +26,7 @@ const handlerUpdateUsername = (db) => (req, res) => {
 
 const handlerUpdateUserEmail = (db) => (req, res) => {
   const { user_id, newEmail, oldEmail } = req.body;
-  console.log(req.body);
+
   if (!user_id || !newEmail) return res.status(400).json("have no access to this data");
 
   db.update({ email: newEmail })

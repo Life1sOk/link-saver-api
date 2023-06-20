@@ -6,5 +6,6 @@
 \i '/docker-entrypoint-initdb.d/table/links.sql'
 \i '/docker-entrypoint-initdb.d/table/friends.sql'
 \i '/docker-entrypoint-initdb.d/table/transition.sql'
+\i '/docker-entrypoint-initdb.d/table/archive.sql'
 
 \i '/docker-entrypoint-initdb.d/seed/seed.sql'

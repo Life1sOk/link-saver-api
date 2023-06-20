@@ -1,3 +1,5 @@
+const redis = require("../helpers/redis");
+
 // Get Generic's links
 const handleGetGenericLinks = (db) => (req, res) => {
   const { user_id } = req.params;
@@ -90,15 +92,28 @@ const handleChangeLinksGroup = (db) => (req, res) => {
 
 // Delete link
 const handleDeleteLinks = (db) => (req, res) => {
-  const { id } = req.body;
+  const { id, user_id } = req.body;
 
-  if (!id) return res.status(400).json("bad field");
+  if (!id || !user_id) return res.status(400).json("bad field");
 
-  db.del()
-    .into("links")
-    .where({ id })
-    .then(() => res.status(200).json("link succesfully deleted"))
-    .catch(() => res.status(400).json("something is going wrong"));
+  db.transaction((trx) => {
+    trx
+      .del()
+      .into("links")
+      .where({ id })
+      .returning("*")
+      .then((data) => {
+        return trx
+          .insert({ user_id, data_id: id, data_type: "link" })
+          .into("archive")
+          .then(() => data)
+          .catch(() => "archive table fail");
+      })
+      .then((link) => redis.addIntoArchive(user_id, "link", link[0]))
+      .then(() => res.status(200).json("link succesfully deleted"))
+      .then(trx.commit)
+      .catch(trx.rollback);
+  }).catch(() => res.status(400).json("something is going wrong"));
 };
 
 module.exports = {

@@ -1,4 +1,4 @@
-const session = require("../helpers/session");
+const session = require("../helpers/redis");
 
 const handleRegister = (db, bcrypt, req, res) => {
   const { username, password, email } = req.body;

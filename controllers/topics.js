@@ -1,3 +1,5 @@
+const redis = require("../helpers/redis");
+
 // Get all topics
 const handleGetTopics = (db) => (req, res) => {
   const { user_id } = req.params;
@@ -70,16 +72,25 @@ const handleDeleteTopic = (db) => (req, res) => {
           .del()
           .into("groups")
           .where({ topic_id: id })
-          .returning("id")
-          .then((group_id) => {
-            return trx
-              .del()
-              .into("links")
-              .whereIn(
-                "group_id",
-                group_id.map((group) => group.id)
-              )
-              .then(() => res.status(200).json("group succesfully deleted"));
+          .returning(["id", "group_title"])
+          .then((groups) => {
+            return Promise.all(
+              groups.map((data) => {
+                return trx
+                  .del()
+                  .into("links")
+                  .where({ user_id, group_id: id })
+                  .returning(["id", "link_title", "link_url", "status"])
+                  .then((links) => {
+                    const prepData = { ...data, links };
+
+                    return trx
+                      .insert({ user_id, data_id: data.id, data_type: "group" })
+                      .into("archive")
+                      .then(() => redis.addIntoArchive(user_id, "group", prepData));
+                  });
+              })
+            ).then(() => res.status(200).json("topic succesfully deleted"));
           });
       })
       .then(trx.commit)
