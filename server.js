@@ -19,8 +19,6 @@ const archive = require("./controllers/archive");
 
 const websocket = require("./helpers/websocket");
 
-const websocket = require("./helpers/websocket");
-
 const db = knex({
   client: "pg",
   // connection: process.env.POSTGRES_URI,
