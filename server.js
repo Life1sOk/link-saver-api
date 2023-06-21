@@ -15,6 +15,9 @@ const groups = require("./controllers/groups");
 const links = require("./controllers/links");
 const friends = require("./controllers/friend");
 const transition = require("./controllers/transition");
+const archive = require("./controllers/archive");
+
+const websocket = require("./helpers/websocket");
 
 const websocket = require("./helpers/websocket");
 
@@ -78,6 +81,9 @@ app.put("/links/change", links.handleChangeLinks(db));
 app.put("/links/change/group", links.handleChangeLinksGroup(db));
 app.put("/links/change/status", links.handleChangeStatus(db));
 app.delete("/links/delete", links.handleDeleteLinks(db));
+
+app.get("/archive/:user_id", archive.handleGetArchive(db));
+app.put("/archive/clear", archive.handleClearArchive(db));
 
 const PORT = process.env.PORT || 3000;
 

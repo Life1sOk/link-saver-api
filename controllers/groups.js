@@ -1,3 +1,5 @@
+const redis = require("../helpers/redis");
+
 // Get groups with links
 const handleGetGroupsWithLinks = (db) => (req, res) => {
   const { params } = req.params;
@@ -82,11 +84,21 @@ const handleDeleteGroup = (db) => (req, res) => {
       .del()
       .into("groups")
       .where({ id })
-      .then(() => {
+      .returning(["id", "group_title"])
+      .then((data) => {
         return trx
           .del()
           .into("links")
           .where({ user_id, group_id: id })
+          .returning(["id", "link_title", "link_url", "status"])
+          .then((links) => {
+            const prepData = { ...data[0], links };
+
+            return trx
+              .insert({ user_id, data_id: id, data_type: "group" })
+              .into("archive")
+              .then(() => redis.addIntoArchive(user_id, "group", prepData));
+          })
           .then(() => res.status(200).json("group succesfully deleted"));
       })
       .then(trx.commit)
