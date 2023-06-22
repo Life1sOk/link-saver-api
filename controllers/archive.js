@@ -33,21 +33,58 @@ const handleGetArchive = (db) => (req, res) => {
     .catch(() => res.status(400).json("something is going wrong"));
 };
 
-const handleClearArchive = (db) => (req, res) => {
-  const { user_id, data_id, data_type } = req.body;
+const handleRestoreArchive = (db) => (req, res) => {
+  const { user_id, data, data_type } = req.body;
 
-  if (!user_id || !data_id || !data_type)
+  if (!user_id || !data || !data_type)
     return res.status(400).json("have no access to this data");
 
   db.del()
     .into("archive")
-    .where({ user_id, data_id, data_type })
-    .then(() => redis.deleteFromArchive(user_id, data_id, data_type))
-    .then(() => res.status(200).json("archive succesfully deleted"))
+    .where({ user_id, data_id: data.id, data_type })
+    .then(() => redis.deleteFromArchive(user_id, data.id, data_type))
+    .then(() => {
+      if (data_type === "group") {
+        const { id, group_title, topic_id, links } = data;
+
+        return db
+          .insert({ id, topic_id, group_title, user_id, created_at: new Date() })
+          .into("groups")
+          .returning("id")
+          .then((data) => {
+            const group_id = data[0].id;
+            console.log(group_id, "group_id");
+
+            return Promise.all(
+              links.map((link) => {
+                console.log(link);
+                db.insert({ ...link, user_id, group_id, created_at: new Date() })
+                  .into("links")
+                  .then(() => console.log("done"));
+              })
+            ).then(() => res.status(200).json("archive group complited"));
+          });
+      }
+
+      if (data_type === "link") {
+        // Add to server
+        return db
+          .insert({
+            id: data.id,
+            user_id: data.user_id,
+            group_id: null,
+            link_title: data.link_title,
+            link_url: data.link_url,
+            created_at: new Date(),
+          })
+          .into("links")
+          .then(() => res.status(200).json("archive links complited"));
+      }
+    })
     .catch(() => res.status(400).json("something is going wrong"));
 };
 
 module.exports = {
   handleGetArchive,
-  handleClearArchive,
+  handleRestoreArchive,
 };
