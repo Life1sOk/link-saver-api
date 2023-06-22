@@ -79,7 +79,7 @@ const handleDeleteTopic = (db) => (req, res) => {
                 return trx
                   .del()
                   .into("links")
-                  .where({ user_id, group_id: id })
+                  .where({ user_id, group_id: data.id })
                   .returning(["id", "link_title", "link_url", "status"])
                   .then((links) => {
                     const prepData = { ...data, links };
