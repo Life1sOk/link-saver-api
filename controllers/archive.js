@@ -91,7 +91,22 @@ const handleRestoreArchive = (db) => (req, res) => {
     .catch(() => res.status(400).json("something is going wrong"));
 };
 
+const handleDeleteArchive = (db) => (req, res) => {
+  const { user_id, data_id, data_type } = req.body;
+
+  if (!user_id || !data_id || !data_type)
+    return res.status(400).json("have no access to this data");
+
+  db.del()
+    .into("archive")
+    .where({ user_id, data_id, data_type })
+    .then(() => redis.deleteFromArchive(user_id, data_id, data_type))
+    .then(() => res.status(200).json("deleted from archive"))
+    .catch(() => res.status(400).json("something is going wrong"));
+};
+
 module.exports = {
   handleGetArchive,
   handleRestoreArchive,
+  handleDeleteArchive,
 };

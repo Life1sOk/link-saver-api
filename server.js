@@ -81,7 +81,8 @@ app.put("/links/change/status", links.handleChangeStatus(db));
 app.delete("/links/delete", links.handleDeleteLinks(db));
 
 app.get("/archive/:user_id", archive.handleGetArchive(db));
-app.put("/archive/clear", archive.handleRestoreArchive(db));
+app.put("/archive/restore", archive.handleRestoreArchive(db));
+app.put("/archive/delete", archive.handleDeleteArchive(db));
 
 const PORT = process.env.PORT || 3000;
 
