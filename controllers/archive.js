@@ -53,12 +53,19 @@ const handleRestoreArchive = (db) => (req, res) => {
           .returning("id")
           .then((data) => {
             const group_id = data[0].id;
-            console.log(group_id, "group_id");
 
             return Promise.all(
               links.map((link) => {
-                console.log(link);
-                db.insert({ ...link, user_id, group_id, created_at: new Date() })
+                const { id, link_title, link_url } = link;
+                console.log(link, "link");
+                db.insert({
+                  id,
+                  user_id,
+                  group_id,
+                  link_title,
+                  link_url,
+                  created_at: new Date(),
+                })
                   .into("links")
                   .then(() => console.log("done"));
               })
