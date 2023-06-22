@@ -40,7 +40,7 @@ const handleAddGroup = (db) => (req, res) => {
 
   if (topic_id == null || !group_title || !user_id)
     return res.status(400).json("have no access to this data");
-  // Need check if group already exist
+
   db.insert({ topic_id, group_title, user_id, created_at: new Date() })
     .into("groups")
     .returning("id")
