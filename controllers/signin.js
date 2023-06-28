@@ -5,12 +5,17 @@ const handleSignin = (db, bcrypt, req, res) => {
   if (!email || !password) return res.status(400).json("not fill all properties");
 
   return db
-    .select("email", "hash")
+    .select("email", "hash", "confirmed")
     .from("login")
     .where({ email })
     .then((loginUser) => {
-      const { hash, email } = loginUser[0];
+      const { hash, email, confirmed } = loginUser[0];
       let isValid = bcrypt.compareSync(password, hash);
+
+      if (!confirmed) {
+        console.log("not confirmed");
+        return Promise.reject("User was not verified");
+      }
 
       if (isValid) {
         return db

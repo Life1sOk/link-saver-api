@@ -26,7 +26,7 @@ const createToken = (email) => {
 
 // Пушим токен в редис стор
 const setToken = async (token, id) => {
-  return await clientRedis.set(token, id);
+  return await clientRedis.set(token, id, { EX: 86400 });
 };
 
 // Создаем сессию и отправляем промис с данными
