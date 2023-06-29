@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+require("dotenv").config();
 
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
@@ -21,13 +22,13 @@ const websocket = require("./helpers/websocket");
 
 const db = knex({
   client: "pg",
-  // connection: process.env.POSTGRES_URI,
-  connection: {
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  },
+  connection: process.env.POSTGRES_URI,
+  // connection: {
+  //   connectionString: process.env.DATABASE_URL,
+  //   ssl: {
+  //     rejectUnauthorized: false,
+  //   },
+  // },
 });
 
 app.use(bodyParser.json());
@@ -41,6 +42,7 @@ app.get("/", (request, response) => response.send("It is working right now"));
 
 app.post("/signin", signin.signinAuthentication(db, bcrypt));
 app.post("/register", register.registerAuthentication(db, bcrypt));
+app.get("/confirm/:token", register.handleConfirmation(db));
 
 app.get("/profile/:user_id", user.handlerGetUser(db));
 app.put("/profile/update/username", user.handlerUpdateUsername(db));

@@ -1,12 +1,12 @@
 const session = require("../helpers/redis");
 const emailConf = require("../helpers/nodemailer");
+const hashGen = require("../helpers/bcrypt");
 
 const handleRegister = (db, bcrypt, req, res) => {
   const { username, password, email } = req.body;
   if (!username || !password || !email) return Promise.reject("not fill all properties");
 
-  const salt = bcrypt.genSaltSync(10);
-  const hash = bcrypt.hashSync(password, salt);
+  const hash = hashGen.createHash(bcrypt, password);
 
   if (hash) {
     return db
@@ -60,6 +60,17 @@ const registerAuthentication = (db, bcrypt) => (req, res) => {
   //   .catch(() => res.status(400).json("some fail with user"));
 };
 
+const handleConfirmation = (db) => (req, res) => {
+  const { token } = req.params;
+
+  db.update({ confirmed: true })
+    .into("login")
+    .where({ hash: token })
+    .then(() => res.status(200).json("User confirmed"))
+    .catch(() => res.status(400).json("user failed"));
+};
+
 module.exports = {
   registerAuthentication,
+  handleConfirmation,
 };

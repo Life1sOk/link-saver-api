@@ -1,3 +1,5 @@
+const hashGen = require("../helpers/bcrypt");
+
 // Get users data
 const handlerGetUser = (db) => (req, res) => {
   const { user_id } = req.params;
@@ -49,11 +51,10 @@ const handlerChangeUserPassword = (db, bcrypt) => (req, res) => {
     .from("login")
     .where({ email })
     .then((hash) => {
-      let isValid = bcrypt.compareSync(oldPassword, hash[0].hash);
+      let isValid = hashGen.compareHash(bcrypt, oldPassword, hash[0].hash);
 
       if (isValid) {
-        const salt = bcrypt.genSaltSync(10);
-        const newHash = bcrypt.hashSync(newPassword, salt);
+        const newHash = hashGen.createHash(bcrypt, newPassword);
 
         return db.update({ hash: newHash }).into("login").where({ email });
       } else {

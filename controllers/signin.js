@@ -1,4 +1,5 @@
 const session = require("../helpers/redis");
+const hashGen = require("../helpers/bcrypt");
 
 const handleSignin = (db, bcrypt, req, res) => {
   const { email, password } = req.body;
@@ -10,7 +11,7 @@ const handleSignin = (db, bcrypt, req, res) => {
     .where({ email })
     .then((loginUser) => {
       const { hash, email, confirmed } = loginUser[0];
-      let isValid = bcrypt.compareSync(password, hash);
+      let isValid = hashGen.compareHash(bcrypt, password, hash);
 
       if (!confirmed) {
         console.log("not confirmed");
