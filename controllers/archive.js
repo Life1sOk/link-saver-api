@@ -1,4 +1,4 @@
-const redis = require("../helpers/redis");
+const redis = require("../utils/redis");
 
 // Get archive data
 const handleGetArchive = (db) => (req, res) => {

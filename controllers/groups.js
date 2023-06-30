@@ -1,4 +1,4 @@
-const redis = require("../helpers/redis");
+const redis = require("../utils/redis");
 
 // Get groups with links
 const handleGetGroupsWithLinks = (db) => (req, res) => {

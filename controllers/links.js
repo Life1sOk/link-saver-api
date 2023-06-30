@@ -1,4 +1,4 @@
-const redis = require("../helpers/redis");
+const redis = require("../utils/redis");
 
 // Get Generic's links
 const handleGetGenericLinks = (db) => (req, res) => {

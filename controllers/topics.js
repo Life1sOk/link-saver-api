@@ -1,4 +1,4 @@
-const redis = require("../helpers/redis");
+const redis = require("../utils/redis");
 
 // Get all topics
 const handleGetTopics = (db) => (req, res) => {

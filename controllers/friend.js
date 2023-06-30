@@ -1,4 +1,4 @@
-const websocket = require("../helpers/websocket");
+const websocket = require("../utils/websocket");
 
 const handlerGetFriends = (db) => (req, res) => {
   const { user_id } = req.params;

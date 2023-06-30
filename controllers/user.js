@@ -1,4 +1,4 @@
-const hashGen = require("../helpers/bcrypt");
+const hashGen = require("../utils/bcrypt");
 
 // Get users data
 const handlerGetUser = (db) => (req, res) => {
@@ -65,6 +65,27 @@ const handlerChangeUserPassword = (db, bcrypt) => (req, res) => {
     .catch(() => res.status(400).json("something wrong here"));
 };
 
+const handlerChangeUserPasswordByToken = (db, bcrypt) => (req, res) => {
+  const { newPassword, token } = req.body;
+
+  if (!token || !newPassword) return res.status(400).json("have no access to this data");
+
+  const newHash = hashGen.createHash(bcrypt, newPassword);
+
+  db.update({ hash: newHash })
+    .into("login")
+    .where({ hash: token })
+    .returning("*")
+    .then((data) => {
+      if (data[0]) {
+        return res.status(200).json("password updated");
+      } else {
+        return Promise.reject("unvalid token");
+      }
+    })
+    .catch(() => res.status(400).json("unvalid token"));
+};
+
 const handlerGetUserSearch = (db) => (req, res) => {
   const { uservalue } = req.params;
   let splited = uservalue.split("&");
@@ -107,5 +128,6 @@ module.exports = {
   handlerUpdateUsername,
   handlerUpdateUserEmail,
   handlerChangeUserPassword,
+  handlerChangeUserPasswordByToken,
   handlerGetUserSearch,
 };

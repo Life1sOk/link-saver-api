@@ -1,5 +1,5 @@
-const session = require("../helpers/redis");
-const hashGen = require("../helpers/bcrypt");
+const session = require("../utils/redis");
+const hashGen = require("../utils/bcrypt");
 
 const handleSignin = (db, bcrypt, req, res) => {
   const { email, password } = req.body;

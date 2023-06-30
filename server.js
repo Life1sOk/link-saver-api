@@ -17,8 +17,9 @@ const links = require("./controllers/links");
 const friends = require("./controllers/friend");
 const transition = require("./controllers/transition");
 const archive = require("./controllers/archive");
+const confirm = require("./controllers/confirm");
 
-const websocket = require("./helpers/websocket");
+const websocket = require("./utils/websocket");
 
 const db = knex({
   client: "pg",
@@ -42,13 +43,19 @@ app.get("/", (request, response) => response.send("It is working right now"));
 
 app.post("/signin", signin.signinAuthentication(db, bcrypt));
 app.post("/register", register.registerAuthentication(db, bcrypt));
-app.get("/confirm/:token", register.handleConfirmation(db));
-app.post("/confirm/verification", register.handleSendConfirmationAgain(db));
+
+app.get("/confirm/:token", confirm.handleConfirmation(db));
+app.post("/confirm/verification", confirm.handleSendConfirmationAgain(db));
+app.post("/confirm/reset", confirm.handleSendResetPassword(db));
 
 app.get("/profile/:user_id", user.handlerGetUser(db));
 app.put("/profile/update/username", user.handlerUpdateUsername(db));
 app.put("/profile/update/email", user.handlerUpdateUserEmail(db));
 app.put("/profile/update/password", user.handlerChangeUserPassword(db, bcrypt));
+app.put(
+  "/profile/update/passwordbytoken",
+  user.handlerChangeUserPasswordByToken(db, bcrypt)
+);
 app.get("/profile/search/:uservalue", user.handlerGetUserSearch(db));
 
 app.get("/friends/:user_id", friends.handlerGetFriends(db));
