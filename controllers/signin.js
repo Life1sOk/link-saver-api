@@ -10,12 +10,13 @@ const handleSignin = (db, bcrypt, req, res) => {
     .from("login")
     .where({ email })
     .then((loginUser) => {
+      if (!loginUser[0]) return Promise.reject("User does not exist!");
+
       const { hash, email, confirmed } = loginUser[0];
       let isValid = hashGen.compareHash(bcrypt, password, hash);
 
       if (!confirmed) {
-        console.log("not confirmed");
-        return Promise.reject("User was not verified");
+        return Promise.reject("User wasn't verified, please check your email");
       }
 
       if (isValid) {
@@ -24,12 +25,12 @@ const handleSignin = (db, bcrypt, req, res) => {
           .from("users")
           .where({ email })
           .then((user) => user[0])
-          .catch(() => Promise.reject("no such a user"));
+          .catch(() => Promise.reject("User doesn't  exist!"));
       } else {
-        return Promise.reject("Wrong credentials");
+        return Promise.reject("Wrong credentials!");
       }
     })
-    .catch(() => Promise.reject("Email does not exist."));
+    .catch((err) => Promise.reject(err));
 };
 
 const signinAuthentication = (db, bcrypt) => (req, res) => {
@@ -44,7 +45,7 @@ const signinAuthentication = (db, bcrypt) => (req, res) => {
         .then((user) => {
           return user.id && user.email
             ? session.createSession(user)
-            : Promise.reject("rejcted");
+            : Promise.reject("User doesn't  exist!");
         })
         .then((session) => res.status(200).json(session))
         .catch((err) => res.status(400).json(err));
@@ -53,3 +54,9 @@ const signinAuthentication = (db, bcrypt) => (req, res) => {
 module.exports = {
   signinAuthentication,
 };
+
+/*
+  1) User does not exist;
+  2) Wrong password;
+  3) Not verified;
+ */

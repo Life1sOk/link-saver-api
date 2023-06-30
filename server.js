@@ -43,6 +43,7 @@ app.get("/", (request, response) => response.send("It is working right now"));
 app.post("/signin", signin.signinAuthentication(db, bcrypt));
 app.post("/register", register.registerAuthentication(db, bcrypt));
 app.get("/confirm/:token", register.handleConfirmation(db));
+app.post("/confirm/verification", register.handleSendConfirmationAgain(db));
 
 app.get("/profile/:user_id", user.handlerGetUser(db));
 app.put("/profile/update/username", user.handlerUpdateUsername(db));
