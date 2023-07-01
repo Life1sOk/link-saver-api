@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
 const redis = require("redis");
 
-// const clientRedis = redis.createClient({
-//   url: process.env.REDIS_URI,
-// });
-const clientRedis = redis.createClient({ url: process.env.REDIS_URL });
+const clientRedis = redis.createClient({
+  url: process.env.REDIS_URI,
+});
+// const clientRedis = redis.createClient({ url: process.env.REDIS_URL });
 
 clientRedis.on("error", (err) => console.log("Redis Client Error", err));
 
@@ -26,7 +26,7 @@ const createToken = (email) => {
 
 // Пушим токен в редис стор
 const setToken = async (token, id) => {
-  return await clientRedis.set(token, id);
+  return await clientRedis.set(token, id, { EX: 86400 });
 };
 
 // Создаем сессию и отправляем промис с данными

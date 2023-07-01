@@ -1,11 +1,12 @@
-const session = require("../helpers/redis");
+const emailConf = require("../utils/nodemailer");
+const hashGen = require("../utils/bcrypt");
 
 const handleRegister = (db, bcrypt, req, res) => {
   const { username, password, email } = req.body;
+
   if (!username || !password || !email) return Promise.reject("not fill all properties");
 
-  const salt = bcrypt.genSaltSync(10);
-  const hash = bcrypt.hashSync(password, salt);
+  const hash = hashGen.createHash(bcrypt, password);
 
   if (hash) {
     return db
@@ -26,7 +27,9 @@ const handleRegister = (db, bcrypt, req, res) => {
                 email: loginEmail[0].email,
                 created_at: new Date(),
               })
-              .then((user) => user[0]);
+              .then((user) => {
+                return { user: user[0], hash };
+              });
           })
           .then(trx.commit)
           .catch(trx.rollback);
@@ -39,13 +42,14 @@ const handleRegister = (db, bcrypt, req, res) => {
 
 const registerAuthentication = (db, bcrypt) => (req, res) => {
   return handleRegister(db, bcrypt, req, res)
-    .then((user) => {
+    .then(({ user, hash }) => {
       return user.id && user.email
-        ? session.createSession(user)
+        ? // Send verification email to user
+          emailConf.sendAuthEmail(user, hash)
         : Promise.reject("rejcted");
     })
-    .then((session) => res.status(200).json(session))
-    .catch(() => res.status(400).json("some fail with user"));
+    .then((data) => res.status(200).json(data))
+    .catch((err) => res.status(400).json(err));
 };
 
 module.exports = {

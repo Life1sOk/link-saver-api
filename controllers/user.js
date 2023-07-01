@@ -1,3 +1,5 @@
+const hashGen = require("../utils/bcrypt");
+
 // Get users data
 const handlerGetUser = (db) => (req, res) => {
   const { user_id } = req.params;
@@ -49,11 +51,10 @@ const handlerChangeUserPassword = (db, bcrypt) => (req, res) => {
     .from("login")
     .where({ email })
     .then((hash) => {
-      let isValid = bcrypt.compareSync(oldPassword, hash[0].hash);
+      let isValid = hashGen.compareHash(bcrypt, oldPassword, hash[0].hash);
 
       if (isValid) {
-        const salt = bcrypt.genSaltSync(10);
-        const newHash = bcrypt.hashSync(newPassword, salt);
+        const newHash = hashGen.createHash(bcrypt, newPassword);
 
         return db.update({ hash: newHash }).into("login").where({ email });
       } else {
@@ -62,6 +63,27 @@ const handlerChangeUserPassword = (db, bcrypt) => (req, res) => {
     })
     .then(() => res.status(200).json("user succesfully updated!!"))
     .catch(() => res.status(400).json("something wrong here"));
+};
+
+const handlerChangeUserPasswordByToken = (db, bcrypt) => (req, res) => {
+  const { newPassword, token } = req.body;
+
+  if (!token || !newPassword) return res.status(400).json("have no access to this data");
+
+  const newHash = hashGen.createHash(bcrypt, newPassword);
+
+  db.update({ hash: newHash })
+    .into("login")
+    .where({ hash: token })
+    .returning("*")
+    .then((data) => {
+      if (data[0]) {
+        return res.status(200).json("password updated");
+      } else {
+        return Promise.reject("unvalid token");
+      }
+    })
+    .catch(() => res.status(400).json("unvalid token"));
 };
 
 const handlerGetUserSearch = (db) => (req, res) => {
@@ -106,5 +128,6 @@ module.exports = {
   handlerUpdateUsername,
   handlerUpdateUserEmail,
   handlerChangeUserPassword,
+  handlerChangeUserPasswordByToken,
   handlerGetUserSearch,
 };
