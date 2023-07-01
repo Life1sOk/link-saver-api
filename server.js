@@ -23,19 +23,19 @@ const websocket = require("./utils/websocket");
 
 const db = knex({
   client: "pg",
-  connection: process.env.POSTGRES_URI,
-  // connection: {
-  //   connectionString: process.env.DATABASE_URL,
-  //   ssl: {
-  //     rejectUnauthorized: false,
-  //   },
-  // },
+  // connection: process.env.POSTGRES_URI,
+  connection: {
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  },
 });
 
 app.use(bodyParser.json());
 app.use(cors());
 
-// WebSocker //
+// WebSocket //
 app.ws("/connect", websocket.connectSocketHandler(wss));
 // ------------------ //
 
