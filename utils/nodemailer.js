@@ -25,7 +25,7 @@ const sendAuthEmail = async (user, hash) => {
     .then(() => {
       return { emailConf: true };
     })
-    .catch(() => Promise.reject("some fail with confirmation email"));
+    .catch((err) => Promise.reject(err, "some fail with confirmation email"));
 };
 
 const sendResetEmail = async (user, hash) => {
