@@ -1,9 +1,9 @@
-const connectSocketHandler = (wss) => {
+const connectSocketHandler = (wss) => (ws, res) => {
   console.log("connection WEB SOCKET");
 
-  wss.on("message", (connection) => {
+  ws.on("message", (connection) => {
     const msg = JSON.parse(connection);
-    wss.id = msg.user_id;
+    ws.id = msg.user_id;
   });
 };
 
