@@ -16,7 +16,7 @@ const sendAuthEmail = async (user, hash) => {
     html: `<h1>Email Confirmation</h1>
           <h2>Hello ${user.username}</h2>
           <p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-          <a href=https://link-saver.herokuapp.com/#/confirm/${hash}> Click here</a>
+          <a href=https://life1sok.github.io/link-saver/#/confirm/${hash}> Click here</a>
           </div>`,
   };
 
@@ -25,7 +25,7 @@ const sendAuthEmail = async (user, hash) => {
     .then(() => {
       return { emailConf: true };
     })
-    .catch(() => Promise.reject("some fail with confirmation email"));
+    .catch((err) => Promise.reject(err, "some fail with confirmation email"));
 };
 
 const sendResetEmail = async (user, hash) => {
@@ -36,7 +36,7 @@ const sendResetEmail = async (user, hash) => {
     html: `<h1>Email Confirmation</h1>
           <h2>Hello ${user.username}</h2>
           <p>Please click the link below to reset your password:</p>
-          <a href=https://link-saver.herokuapp.com/#/password/${hash}> Click here</a>
+          <a href=https://life1sok.github.io/link-saver/#/password/${hash}> Click here</a>
           <p>This link will direct you to the password reset page where you can create a new password for your account. If you have any issues or require additional assistance, please let us know.</p>
           </div>`,
   };
